@@ -71,7 +71,6 @@ func ChatCompletion(client OpenAIClient, httpClient HTTPClient, body *Completion
 	if err != nil {
 		return nil, err
 	}
-	defer res.Request.Body.Close()
 	response := new(CompletionResponse)
 	if err := goxios.DecodeJSON(res.Body, response); err != nil {
 		return nil, err
