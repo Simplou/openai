@@ -9,7 +9,7 @@ This package provides an interface for interacting with services offered by Open
 To install the OpenAI package, use the go get command:
 
 ```bash
-go get github.com/Simplou/openai/v1
+go get github.com/Simplou/openai
 ```
 
 ## Usage
@@ -26,7 +26,7 @@ import (
 	"context"
 
 	"github.com/Simplou/goxios"
-	"github.com/Simplou/openai/v1"
+	"github.com/Simplou/openai"
 )
 
 const fileName = "hello.mp3"
@@ -70,7 +70,7 @@ import (
 	"context"
 
 	"github.com/Simplou/goxios"
-    "github.com/Simplou/openai/v1"
+    "github.com/Simplou/openai"
 )
 
 const fileName = "hello.mp3"
@@ -106,7 +106,7 @@ import (
 	"context"
 
 	"github.com/Simplou/goxios"
-	"github.com/Simplou/openai/v1"
+	"github.com/Simplou/openai"
 )
 
 var (
@@ -143,7 +143,7 @@ import (
 	"context"
 
 	"github.com/Simplou/goxios"
-	"github.com/Simplou/openai/v1"
+	"github.com/Simplou/openai"
 )
 
 var (
