@@ -1,4 +1,4 @@
-package openaigo
+package openai
 
 import (
 	"bytes"

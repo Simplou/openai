@@ -1,4 +1,4 @@
-module github.com/Simplou/openai-go
+module github.com/Simplou/openai
 
 go 1.22.0
 
