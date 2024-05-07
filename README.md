@@ -9,7 +9,7 @@ This package provides an interface for interacting with services offered by Open
 To install the OpenAI package, use the go get command:
 
 ```bash
-go get github.com/Simplou/openai
+go get github.com/Simplou/openai/v1
 ```
 
 ## Usage
