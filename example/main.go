@@ -17,6 +17,7 @@ var (
 
 func main() {
 	chat()
+	functionCall()
 	tts()
 	whisper()
 }

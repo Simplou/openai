@@ -17,8 +17,18 @@ type CompletionRequest struct {
 
 // Message represents a message in the conversation.
 type Message struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
+	Role      string     `json:"role"`
+	Content   string     `json:"content"`
+	ToolCalls []ToolCall `json:"tool_calls,omitempty"`
+}
+
+type ToolCall struct {
+	Id       string `json:"id"`
+	Type     string `json:"type"`
+	Function struct {
+		Name string `json:"name"`
+		Args string `json:"arguments"`
+	} `json:"function"`
 }
 
 // Tool represents a tool that can be used during the conversation.
@@ -29,7 +39,24 @@ type Tool struct {
 
 // Function represents a function call that can be used as a tool.
 type Function struct {
-	Name string `json:"name"`
+	Name        string             `json:"name"`
+	Description string             `json:"description"`
+	Parameters  FunctionParameters `json:"parameters"`
+}
+
+type FunctionProperties map[string]FunctionPropertie
+
+// FunctionParameters represents the parameters of a function
+type FunctionParameters struct {
+	Type               string `json:"type"`
+	FunctionProperties `json:"properties"`
+}
+
+// FunctionPropertie represents a property of a function.
+type FunctionPropertie struct {
+	Type        string   `json:"type"`
+	Description string   `json:"description"`
+	Enum        []string `json:"enum,omitempty"`
 }
 
 // CompletionResponse represents the structure of the response received from the OpenAI API.

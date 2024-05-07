@@ -2,7 +2,7 @@
 
 [![GoReport](https://img.shields.io/badge/%F0%9F%93%9D%20goreport-A%2B-75C46B?style=flat-square)](https://goreportcard.com/report/github.com/Simplou/openai)
 
-This package provides an interface for interacting with services offered by OpenAI, such as Text-to-Speech (TTS), Transcription, and Chat using advanced language models.
+This package provides an interface for interacting with services offered by OpenAI, such as Text-to-Speech (TTS), Transcription, and Chat (Completion, Function Calling) using advanced language models.
 
 ## Installation
 
@@ -23,13 +23,19 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"context"
 
+	"github.com/Simplou/goxios"
 	"github.com/Simplou/openai/v1"
 )
 
 const fileName = "hello.mp3"
 
 var (
+	ctx        = context.Background()
+	apiKey     = os.Getenv("OPENAI_KEY")
+	client     = openai.New(ctx, apiKey)
+	httpClient = goxios.New(ctx)
 	audioFilePath = fmt.Sprintf("./temp/%s", fileName)
 )
 
@@ -60,11 +66,21 @@ package main
 
 import (
 	"log"
+	"os"
+	"context"
 
-	openai "github.com/Simplou/openai/v1"
+	"github.com/Simplou/goxios"
+    "github.com/Simplou/openai/v1"
 )
 
 const fileName = "hello.mp3"
+
+var (
+	ctx        = context.Background()
+	apiKey     = os.Getenv("OPENAI_KEY")
+	client     = openai.New(ctx, apiKey)
+	httpClient = goxios.New(ctx)
+)
 
 func main() {
 	transcription, err := openai.Transcription(client, httpClient, &openai.TranscriptionsRequestBody{
@@ -86,8 +102,18 @@ package main
 
 import (
 	"log"
+	"os"
+	"context"
 
-	openai "github.com/Simplou/openai/v1"
+	"github.com/Simplou/goxios"
+	"github.com/Simplou/openai/v1"
+)
+
+var (
+	ctx        = context.Background()
+	apiKey     = os.Getenv("OPENAI_KEY")
+	client     = openai.New(ctx, apiKey)
+	httpClient = goxios.New(ctx)
 )
 
 func main() {
@@ -106,10 +132,78 @@ func main() {
 }
 ```
 
+### Function Calling
+
+```go
+package main
+
+import (
+	"encoding/json"
+	"os"
+	"context"
+
+	"github.com/Simplou/goxios"
+	"github.com/Simplou/openai/v1"
+)
+
+var (
+	ctx        = context.Background()
+	apiKey     = os.Getenv("OPENAI_KEY")
+	client     = openai.New(ctx, apiKey)
+	httpClient = goxios.New(ctx)
+)
+
+func main() {
+	functionRegistry := map[string]func(string){}
+	sendEmailFnName := "sendEmail"
+	functionRegistry[sendEmailFnName] = func(email string) {
+		println("email ", email)
+	}
+	body := &openai.CompletionRequest{
+		Model: "gpt-3.5-turbo",
+		Messages: []openai.Message{
+			{Role: "user", Content: "send email to 93672097+gabrielluizsf@users.noreply.github.com"},
+		},
+		Tools: []openai.Tool{
+			{
+				Type: "function",
+				Function: openai.Function{
+					Name:        sendEmailFnName,
+					Description: "send email",
+					Parameters: openai.FunctionParameters{
+						Type: "object",
+						FunctionProperties: openai.FunctionProperties{
+							"email": {
+								Type:        "string",
+								Description: "email provided by user",
+							},
+						},
+					},
+				},
+			},
+		},
+		ToolChoice: "auto",
+	}
+	res, err := openai.ChatCompletion(client, httpClient, body)
+	if err != nil {
+		panic(err)
+	}
+	toolCalls := res.Choices[0].Message.ToolCalls
+	if len(toolCalls) > 0 {
+		var argumentsMap map[string]string
+		if err := json.Unmarshal([]byte(toolCalls[0].Function.Args), &argumentsMap); err != nil {
+			panic(err)
+		}
+		functionRegistry[toolCalls[0].Function.Name](argumentsMap["email"])
+	}
+}
+
+```
+
 ## Contribution
 
 If you want to contribute improvements to this package, feel free to open an issue or send a pull request.
 
 ## License
 
-This package is licensed under the MIT License.  See the [LICENSE](LICENSE) file for details.
+This package is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
