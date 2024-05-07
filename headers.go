@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	headers = []goxios.Header{}
+	headers         = []goxios.Header{}
 	contentTypeJSON = goxios.Header{Key: "Content-Type", Value: "application/json"}
 )
 
