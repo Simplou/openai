@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/Simplou/openai"
+	"github.com/Simplou/openai/v1"
 )
 
 const fileName = "hello.mp3"

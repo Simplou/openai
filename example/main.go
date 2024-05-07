@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/Simplou/goxios"
-	openai "github.com/Simplou/openai"
+	"github.com/Simplou/openai/v1"
 )
 
 var (
