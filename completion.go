@@ -57,8 +57,8 @@ type Usage struct {
 	TotalTokens      int `json:"total_tokens"`
 }
 
-func ChatCompletion(client OpenAIClient, httpClient HTTPClient, body *CompletionRequest) (*CompletionResponse, error) {
-	client.AddHeader(contentTypeJSON)
+func ChatCompletion(api OpenAIClient, httpClient HTTPClient, body *CompletionRequest) (*CompletionResponse, error) {
+	api.AddHeader(contentTypeJSON)
 	b, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
@@ -67,7 +67,7 @@ func ChatCompletion(client OpenAIClient, httpClient HTTPClient, body *Completion
 		Headers: Headers(),
 		Body:    bytes.NewBuffer(b),
 	}
-	res, err := httpClient.Post(client.BaseURL()+"/chat/completions", options)
+	res, err := httpClient.Post(api.BaseURL()+"/chat/completions", options)
 	if err != nil {
 		return nil, err
 	}
