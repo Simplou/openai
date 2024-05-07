@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/Simplou/openai"
+	"github.com/Simplou/openai/v1"
 )
 
 const fileName = "hello.mp3"
@@ -35,11 +35,11 @@ func tts() {
 
 func whisper() {
 	transcription, err := openai.Transcription(client, httpClient, &openai.TranscriptionsRequestBody{
-		Model: openai.DefaultTranscriptionModel,
-		Filename: fileName,
+		Model:         openai.DefaultTranscriptionModel,
+		Filename:      fileName,
 		AudioFilePath: audioFilePath,
 	})
-	if err != nil{
+	if err != nil {
 		panic(err)
 	}
 	println(transcription.Text)

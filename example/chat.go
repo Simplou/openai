@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	openai "github.com/Simplou/openai"
+	"github.com/Simplou/openai/v1"
 )
 
 func chat() {
