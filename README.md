@@ -24,7 +24,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/Simplou/openai"
+	"github.com/Simplou/openai/v1"
 )
 
 const fileName = "hello.mp3"
@@ -61,7 +61,7 @@ package main
 import (
 	"log"
 
-	openai "github.com/Simplou/openai"
+	openai "github.com/Simplou/openai/v1"
 )
 
 const fileName = "hello.mp3"
@@ -87,7 +87,7 @@ package main
 import (
 	"log"
 
-	openai "github.com/Simplou/openai"
+	openai "github.com/Simplou/openai/v1"
 )
 
 func main() {
