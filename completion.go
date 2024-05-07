@@ -58,7 +58,7 @@ type Usage struct {
 }
 
 func ChatCompletion(client OpenAIClient, httpClient HTTPClient, body *CompletionRequest) (*CompletionResponse, error) {
-	client.AddHeader(goxios.Header{Key: "Content-Type", Value: "application/json"})
+	client.AddHeader(contentTypeJSON)
 	b, err := json.Marshal(body)
 	if err != nil {
 		return nil, err

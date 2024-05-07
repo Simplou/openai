@@ -4,7 +4,10 @@ import (
 	"github.com/Simplou/goxios"
 )
 
-var headers = []goxios.Header{}
+var (
+	headers = []goxios.Header{}
+	contentTypeJSON = goxios.Header{Key: "Content-Type", Value: "application/json"}
+)
 
 func (c *Client) setAuthorizationHeader() {
 	headers = append(headers, goxios.Header{Key: "Authorization", Value: "Bearer " + c.apiKey})
