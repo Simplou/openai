@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/Simplou/openai/v1"
+	"github.com/Simplou/openai"
 )
 
 func chat() {
