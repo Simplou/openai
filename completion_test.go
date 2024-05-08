@@ -38,7 +38,7 @@ func (c *testHTTPClient) Post(url string, opts *goxios.RequestOpts) (*http.Respo
 		"choices": []Choice{
 			{
 				Index:        0,
-				Message:      Message{Role: "assistant", Content: "Hi"},
+				Message:      Message[string]{Role: "assistant", Content: "Hi"},
 				FinishReason: "",
 			},
 		},
@@ -63,9 +63,9 @@ func (c *testHTTPClient) Post(url string, opts *goxios.RequestOpts) (*http.Respo
 func TestChatCompletionRequest(t *testing.T) {
 	mockClient := MockClient{"http://localhost:399317"}
 	httpClient := testHTTPClient{}
-	completionRequest := &CompletionRequest{
+	completionRequest := &CompletionRequest[DefaultMessages]{
 		Model:    "gpt-3.5-turbo",
-		Messages: []Message{{Role: "user", Content: "Hello!"}},
+		Messages: DefaultMessages{{Role: "user", Content: "Hello!"}},
 	}
 
 	response, err := ChatCompletion(mockClient, &httpClient, completionRequest)

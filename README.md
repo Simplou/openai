@@ -117,9 +117,9 @@ var (
 )
 
 func main() {
-	body := &openai.CompletionRequest{
+	body := &openai.CompletionRequest[openai.DefaultMessages]{
 		Model: "gpt-3.5-turbo",
-		Messages: []openai.Message{
+		Messages: openai.DefaultMessages{
 			{Role: "user", Content: "Hello"},
 		},
 	}
@@ -159,9 +159,9 @@ func main() {
 	functionRegistry[sendEmailFnName] = func(email string) {
 		println("email ", email)
 	}
-	body := &openai.CompletionRequest{
+	body := &openai.CompletionRequest[openai.DefaultMessages]{
 		Model: "gpt-3.5-turbo",
-		Messages: []openai.Message{
+		Messages: openai.DefaultMessages{
 			{Role: "user", Content: "send email to 93672097+gabrielluizsf@users.noreply.github.com"},
 		},
 		Tools: []openai.Tool{
