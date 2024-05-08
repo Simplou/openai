@@ -13,6 +13,10 @@ import (
 // MockWhisperHTTPClient is a mock implementation of HTTPClient for testing purposes.
 type MockWhisperHTTPClient struct{}
 
+func (c *MockWhisperHTTPClient) Get(url string, opts *goxios.RequestOpts) (*http.Response, error) {
+	return &http.Response{}, nil
+}
+
 func (c *MockWhisperHTTPClient) Post(url string, opts *goxios.RequestOpts) (*http.Response, error) {
 	json := goxios.JSON{
 		"text": "Hello.",
@@ -31,6 +35,10 @@ func (c *MockWhisperHTTPClient) Post(url string, opts *goxios.RequestOpts) (*htt
 // MockFailingWhisperHTTPClient is a mock implementation of HTTPClient for testing purposes.
 // This implementation always returns an error.
 type MockFailingWhisperHTTPClient struct{}
+
+func (c *MockFailingWhisperHTTPClient) Get(url string, opts *goxios.RequestOpts) (*http.Response, error) {
+	return &http.Response{}, nil
+}
 
 func (c *MockFailingWhisperHTTPClient) Post(url string, opts *goxios.RequestOpts) (*http.Response, error) {
 	json := goxios.JSON{}

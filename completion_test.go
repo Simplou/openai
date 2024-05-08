@@ -60,6 +60,10 @@ func (c *testHTTPClient) Post(url string, opts *goxios.RequestOpts) (*http.Respo
 	return res, nil
 }
 
+func (c *testHTTPClient) Get(url string, opts *goxios.RequestOpts) (*http.Response, error) {
+	return &http.Response{}, nil
+}
+
 func TestChatCompletionRequest(t *testing.T) {
 	mockClient := MockClient{"http://localhost:399317"}
 	httpClient := testHTTPClient{}

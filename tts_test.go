@@ -21,6 +21,9 @@ func (c *MockHTTPClient) Post(url string, opts *goxios.RequestOpts) (*http.Respo
 	}
 	return resp, nil
 }
+func (c *MockHTTPClient) Get(url string, opts *goxios.RequestOpts) (*http.Response, error) {
+	return &http.Response{}, nil
+}
 
 // MockFailingHTTPClient is a mock implementation of HTTPClient for testing purposes.
 // This implementation always returns an error.
@@ -37,6 +40,10 @@ func (c *MockFailingHTTPClient) Post(url string, opts *goxios.RequestOpts) (*htt
 		Body:       io.NopCloser(bytes.NewBuffer(b)),
 	}
 	return resp, errors.New("mock HTTP client always fails")
+}
+
+func (c *MockFailingHTTPClient) Get(url string, opts *goxios.RequestOpts) (*http.Response, error) {
+	return &http.Response{}, nil
 }
 
 type OpenAIClientMock struct {
