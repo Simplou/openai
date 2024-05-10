@@ -3,12 +3,16 @@ package openai
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
+	"io"
+	"log"
+	"net/http"
 
 	"github.com/Simplou/goxios"
 )
 
 type DefaultMessages []Message[string]
-type MediaMessages []Message[mediaMessage]
+type MediaMessages []Message[[]MediaMessage]
 
 // CompletionRequest represents the structure of the request sent to the OpenAI API.
 type CompletionRequest[T any] struct {
@@ -18,18 +22,18 @@ type CompletionRequest[T any] struct {
 	Tools      []Tool `json:"tools,omitempty"`
 }
 
-type mediaMessage struct {
+type MediaMessage struct {
 	Type     string   `json:"type"`
-	Text     string   `json:"text"`
-	ImageUrl imageUrl `json:"image_url"`
+	Text     string   `json:"text,omitempty"`
+	ImageUrl *imageUrl `json:"image_url,omitempty"`
 }
 
 type imageUrl struct {
 	Url string `json:"url"`
 }
 
-func ImageUrl(url string) imageUrl {
-	return imageUrl{url}
+func ImageUrl(url string) *imageUrl {
+	return &imageUrl{url}
 }
 
 // Message represents a message in the conversation.
@@ -107,6 +111,7 @@ func ChatCompletion[Messages any](api OpenAIClient, httpClient HTTPClient, body 
 	if err != nil {
 		return nil, err
 	}
+	log.Println(string(b))
 	options := &goxios.RequestOpts{
 		Headers: Headers(),
 		Body:    bytes.NewBuffer(b),
@@ -114,6 +119,16 @@ func ChatCompletion[Messages any](api OpenAIClient, httpClient HTTPClient, body 
 	res, err := httpClient.Post(api.BaseURL()+"/chat/completions", options)
 	if err != nil {
 		return nil, err
+	}
+	if res.StatusCode >= http.StatusBadRequest{
+		b, err := io.ReadAll(res.Body)
+		if err != nil{
+			return nil, err
+		}
+		if err := res.Body.Close(); err != nil {
+			return nil, err
+		}
+		return nil, errors.New(res.Status+"\n"+ string(b))
 	}
 	response := new(CompletionResponse)
 	if err := goxios.DecodeJSON(res.Body, response); err != nil {

@@ -16,9 +16,10 @@ var (
 )
 
 func main() {
-	chat()
-	functionCall()
-	tts()
-	whisper()
-	image()
+	//chat()
+	//functionCall()
+	//tts()
+	//whisper()
+	//image()
+	vision()
 }
