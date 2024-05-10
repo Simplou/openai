@@ -21,6 +21,7 @@ type OpenAIClient interface {
 
 type HTTPClient interface {
 	Post(string, *goxios.RequestOpts) (*http.Response, error)
+	Get(string, *goxios.RequestOpts) (*http.Response, error)
 }
 
 func (c *Client) BaseURL() string {

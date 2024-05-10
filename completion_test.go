@@ -38,7 +38,7 @@ func (c *testHTTPClient) Post(url string, opts *goxios.RequestOpts) (*http.Respo
 		"choices": []Choice{
 			{
 				Index:        0,
-				Message:      Message{Role: "assistant", Content: "Hi"},
+				Message:      Message[string]{Role: "assistant", Content: "Hi"},
 				FinishReason: "",
 			},
 		},
@@ -60,12 +60,43 @@ func (c *testHTTPClient) Post(url string, opts *goxios.RequestOpts) (*http.Respo
 	return res, nil
 }
 
+func (c *testHTTPClient) Get(url string, opts *goxios.RequestOpts) (*http.Response, error) {
+	return &http.Response{}, nil
+}
+
 func TestChatCompletionRequest(t *testing.T) {
 	mockClient := MockClient{"http://localhost:399317"}
 	httpClient := testHTTPClient{}
-	completionRequest := &CompletionRequest{
+	completionRequest := &CompletionRequest[DefaultMessages]{
 		Model:    "gpt-3.5-turbo",
-		Messages: []Message{{Role: "user", Content: "Hello!"}},
+		Messages: DefaultMessages{{Role: "user", Content: "Hello!"}},
+	}
+
+	response, err := ChatCompletion(mockClient, &httpClient, completionRequest)
+	if err != nil {
+		t.Errorf("Erro ao chamar ChatCompletion: %v", err)
+	}
+
+	expectedID := "123"
+	if response.ID != expectedID {
+		t.Errorf("ID da resposta esperado: %s, ID recebido: %s", expectedID, response.ID)
+	}
+}
+
+func TestVisionCompletionRequest(t *testing.T) {
+	mockClient := MockClient{"http://localhost:399317"}
+	httpClient := testHTTPClient{}
+	completionRequest := &CompletionRequest[MediaMessages]{
+		Model: "gpt-4-turbo",
+		Messages: MediaMessages{
+			{
+				Role: "user",
+				Content: []MediaMessage{
+					{Type: "text", Text: `What'\''s in this image?`},
+					{Type: "image_url", ImageUrl: ImageUrl("https://gabrielluiz.vercel.app/with-C-book.svg")},
+				},
+			},
+		},
 	}
 
 	response, err := ChatCompletion(mockClient, &httpClient, completionRequest)

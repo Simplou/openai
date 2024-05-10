@@ -3,22 +3,43 @@ package openai
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
+	"io"
+	"log"
+	"net/http"
 
 	"github.com/Simplou/goxios"
 )
 
+type DefaultMessages []Message[string]
+type MediaMessages []Message[[]MediaMessage]
+
 // CompletionRequest represents the structure of the request sent to the OpenAI API.
-type CompletionRequest struct {
-	Model      string    `json:"model"`
-	Messages   []Message `json:"messages"`
-	ToolChoice string    `json:"tool_choice,omitempty"`
-	Tools      []Tool    `json:"tools,omitempty"`
+type CompletionRequest[T any] struct {
+	Model      string `json:"model"`
+	Messages   T      `json:"messages"`
+	ToolChoice string `json:"tool_choice,omitempty"`
+	Tools      []Tool `json:"tools,omitempty"`
+}
+
+type MediaMessage struct {
+	Type     string   `json:"type"`
+	Text     string   `json:"text,omitempty"`
+	ImageUrl *imageUrl `json:"image_url,omitempty"`
+}
+
+type imageUrl struct {
+	Url string `json:"url"`
+}
+
+func ImageUrl(url string) *imageUrl {
+	return &imageUrl{url}
 }
 
 // Message represents a message in the conversation.
-type Message struct {
+type Message[T any] struct {
 	Role      string     `json:"role"`
-	Content   string     `json:"content"`
+	Content   T          `json:"content"`
 	ToolCalls []ToolCall `json:"tool_calls,omitempty"`
 }
 
@@ -71,10 +92,10 @@ type CompletionResponse struct {
 
 // Choice represents a response choice in the conversation.
 type Choice struct {
-	Index        int         `json:"index"`
-	Message      Message     `json:"message"`
-	Logprobs     interface{} `json:"logprobs,omitempty"`
-	FinishReason string      `json:"finish_reason"`
+	Index        int             `json:"index"`
+	Message      Message[string] `json:"message"`
+	Logprobs     interface{}     `json:"logprobs,omitempty"`
+	FinishReason string          `json:"finish_reason"`
 }
 
 // Usage represents the token usage in the request and response.
@@ -84,12 +105,13 @@ type Usage struct {
 	TotalTokens      int `json:"total_tokens"`
 }
 
-func ChatCompletion(api OpenAIClient, httpClient HTTPClient, body *CompletionRequest) (*CompletionResponse, error) {
+func ChatCompletion[Messages any](api OpenAIClient, httpClient HTTPClient, body *CompletionRequest[Messages]) (*CompletionResponse, error) {
 	api.AddHeader(contentTypeJSON)
 	b, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
+	log.Println(string(b))
 	options := &goxios.RequestOpts{
 		Headers: Headers(),
 		Body:    bytes.NewBuffer(b),
@@ -97,6 +119,16 @@ func ChatCompletion(api OpenAIClient, httpClient HTTPClient, body *CompletionReq
 	res, err := httpClient.Post(api.BaseURL()+"/chat/completions", options)
 	if err != nil {
 		return nil, err
+	}
+	if res.StatusCode >= http.StatusBadRequest{
+		b, err := io.ReadAll(res.Body)
+		if err != nil{
+			return nil, err
+		}
+		if err := res.Body.Close(); err != nil {
+			return nil, err
+		}
+		return nil, errors.New(res.Status+"\n"+ string(b))
 	}
 	response := new(CompletionResponse)
 	if err := goxios.DecodeJSON(res.Body, response); err != nil {
