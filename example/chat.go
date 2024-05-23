@@ -66,3 +66,45 @@ func functionCall() {
 		functionRegistry[toolCalls[0].Function.Name](argumentsMap["email"])
 	}
 }
+
+func chatByEmbedding(largeText string, query string) {
+	createEmbedding := func(chunks []string) (*openai.EmbeddingResponse[[]float64], error) {
+		emb, err := openai.CreateEmbedding[[]string, []float64](client, httpClient, &openai.EmbeddingRequest[[]string]{
+			Model: "text-embedding-ada-002",
+			Input: chunks,
+		})
+		if err != nil{
+			return &openai.EmbeddingResponse[[]float64]{}, nil
+		}
+		return emb, nil
+	}
+	queryChunks := openai.ChunkText(openai.ChunkTextOpts{Text: query})
+	queryEmb, err := createEmbedding(queryChunks)
+	if err != nil {
+		log.Println(err)
+	}
+	q := queryEmb.Data[0].Embedding
+	qMatrix := make([][]float64, 0)
+	qMatrix = append(qMatrix, q)
+	chunks := openai.ChunkText(openai.ChunkTextOpts{Text: largeText})
+	emb, err := createEmbedding(chunks)
+	if err != nil {
+		log.Println(err)
+	}
+	e := emb.Data[0].Embedding
+	eMatrix := make([][]float64, 0)
+	eMatrix = append(eMatrix, e)
+	indexes, err := openai.FindMostRelevantEmbeddings(qMatrix, eMatrix)
+	if err != nil {
+		log.Println(err)
+	}
+	var relevantChunks []string
+	for _, i := range indexes {
+		relevantChunks = append(relevantChunks, chunks[i])
+	}
+	summary, err := openai.ChunksSummary(client, httpClient, relevantChunks, query)
+	if err != nil{
+		log.Println(err)
+	}
+	log.Println(summary)
+}
