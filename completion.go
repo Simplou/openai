@@ -1,11 +1,7 @@
 package openai
 
 import (
-	"bytes"
 	"encoding/json"
-	"errors"
-	"io"
-	"log"
 	"net/http"
 
 	"github.com/Simplou/goxios"
@@ -23,8 +19,8 @@ type CompletionRequest[T any] struct {
 }
 
 type MediaMessage struct {
-	Type     string   `json:"type"`
-	Text     string   `json:"text,omitempty"`
+	Type     string    `json:"type"`
+	Text     string    `json:"text,omitempty"`
 	ImageUrl *imageUrl `json:"image_url,omitempty"`
 }
 
@@ -37,7 +33,7 @@ func ImageUrl(url string) *imageUrl {
 }
 
 // Message represents a message in the conversation.
-type Message[T any] struct {
+type Message[T string | []MediaMessage] struct {
 	Role      string     `json:"role"`
 	Content   T          `json:"content"`
 	ToolCalls []ToolCall `json:"tool_calls,omitempty"`
@@ -101,42 +97,34 @@ type Choice struct {
 // Usage represents the token usage in the request and response.
 type Usage struct {
 	PromptTokens     int `json:"prompt_tokens"`
-	CompletionTokens int `json:"completion_tokens"`
+	CompletionTokens int `json:"completion_tokens,omitempty"`
 	TotalTokens      int `json:"total_tokens"`
 }
 
-func ChatCompletion[Messages any](api OpenAIClient, httpClient HTTPClient, body *CompletionRequest[Messages]) (*CompletionResponse, error) {
+func ChatCompletion[Messages any](api OpenAIClient, httpClient HTTPClient, body *CompletionRequest[Messages]) (*CompletionResponse, *OpenAIErr) {
 	api.AddHeader(contentTypeJSON)
 	b, err := json.Marshal(body)
 	if err != nil {
-		return nil, err
+		return nil, errCannotMarshalJSON(err)
 	}
-	log.Println(string(b))
 	options := &goxios.RequestOpts{
 		Headers: Headers(),
-		Body:    bytes.NewBuffer(b),
+		Body:    ioReader(b),
 	}
 	res, err := httpClient.Post(api.BaseURL()+"/chat/completions", options)
 	if err != nil {
-		return nil, err
+		return nil, errCannotSendRequest(err)
 	}
-	if res.StatusCode >= http.StatusBadRequest{
-		b, err := io.ReadAll(res.Body)
-		if err != nil{
-			return nil, err
-		}
-		if err := res.Body.Close(); err != nil {
-			return nil, err
-		}
-		return nil, errors.New(res.Status+"\n"+ string(b))
+	if res.StatusCode >= http.StatusBadRequest {
+		return nil, openaiHttpError(res)
 	}
 	response := new(CompletionResponse)
 	if err := goxios.DecodeJSON(res.Body, response); err != nil {
-		return nil, err
+		return nil, errCannotDecodeJSON(err)
 	}
 
 	if err := res.Body.Close(); err != nil {
-		return nil, err
+		return nil, errCloseBody(err)
 	}
 	return response, nil
 }

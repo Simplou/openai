@@ -1,7 +1,6 @@
 package openai
 
 import (
-	"bytes"
 	"context"
 	"io"
 	"net/http"
@@ -47,7 +46,7 @@ func (c *testHTTPClient) Post(url string, opts *goxios.RequestOpts) (*http.Respo
 	if err != nil {
 		return nil, err
 	}
-	resReader := bytes.NewBuffer(resBytes)
+	resReader := ioReader(resBytes)
 	res := &http.Response{
 		Request:       c.req,
 		Status:        http.StatusText(statusCode),

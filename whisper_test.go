@@ -1,7 +1,6 @@
 package openai
 
 import (
-	"bytes"
 	"errors"
 	"io"
 	"net/http"
@@ -27,7 +26,7 @@ func (c *MockWhisperHTTPClient) Post(url string, opts *goxios.RequestOpts) (*htt
 	}
 	resp := &http.Response{
 		StatusCode: http.StatusOK,
-		Body:       io.NopCloser(bytes.NewBuffer(b)),
+		Body:       io.NopCloser(ioReader(b)),
 	}
 	return resp, nil
 }
@@ -48,7 +47,7 @@ func (c *MockFailingWhisperHTTPClient) Post(url string, opts *goxios.RequestOpts
 	}
 	resp := &http.Response{
 		StatusCode: http.StatusBadRequest,
-		Body:       io.NopCloser(bytes.NewBuffer(b)),
+		Body:       io.NopCloser(ioReader(b)),
 	}
 	return resp, errors.New("mock HTTP client always fails")
 }

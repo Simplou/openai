@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"os"
 
 	"github.com/Simplou/openai"
@@ -21,13 +23,17 @@ func AudioGenerated(filePath string)bool{
 func tts() {
 	fileExists := AudioGenerated(audioFilePath)
 	if !fileExists{
-		audio, err := openai.TextToSpeech(client, httpClient, &openai.SpeechRequestBody{
+		audio, openaiErr := openai.TextToSpeech(client, httpClient, &openai.SpeechRequestBody{
 			Model: "tts-1",
 			Input: "Hello",
 			Voice: openai.SpeechVoices.Onyx,
 		})
-		if err != nil {
-			panic(err)
+		if openaiErr != nil {
+			b, err := json.Marshal(openaiErr)
+			if err != nil{
+				panic(err)
+			}
+			log.Fatal(string(b))
 		}
 		defer audio.Close()
 		b, err := io.ReadAll(audio)
