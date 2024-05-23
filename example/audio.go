@@ -16,13 +16,13 @@ var (
 	audioFilePath = fmt.Sprintf("./temp/%s", fileName)
 )
 
-func AudioGenerated(filePath string)bool{
+func AudioGenerated(filePath string) bool {
 	return fileExists(filePath)
 }
 
 func tts() {
 	fileExists := AudioGenerated(audioFilePath)
-	if !fileExists{
+	if !fileExists {
 		audio, openaiErr := openai.TextToSpeech(client, httpClient, &openai.SpeechRequestBody{
 			Model: "tts-1",
 			Input: "Hello",
@@ -30,7 +30,7 @@ func tts() {
 		})
 		if openaiErr != nil {
 			b, err := json.Marshal(openaiErr)
-			if err != nil{
+			if err != nil {
 				panic(err)
 			}
 			log.Fatal(string(b))
