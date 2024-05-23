@@ -2,9 +2,6 @@ package openai
 
 import (
 	"bytes"
-	"encoding/json"
-	"errors"
-	"fmt"
 	"io"
 	"mime/multipart"
 	"os"
@@ -22,10 +19,10 @@ type TranscriptionResponse struct {
 	Text string `json:"text"`
 }
 
-func Transcription(api OpenAIClient, httpClient HTTPClient, body *TranscriptionsRequestBody) (*TranscriptionResponse, error) {
+func Transcription(api OpenAIClient, httpClient HTTPClient, body *TranscriptionsRequestBody) (*TranscriptionResponse, *OpenAIErr) {
 	file, err := os.Open(body.AudioFilePath)
 	if err != nil {
-		return nil, err
+		return nil, errCannotOpenFile(err)
 	}
 	defer file.Close()
 
@@ -34,11 +31,11 @@ func Transcription(api OpenAIClient, httpClient HTTPClient, body *Transcriptions
 
 	part, err := writer.CreateFormFile("file", body.Filename)
 	if err != nil {
-		return nil, err
+		return nil, errCannotCreateFormFile(err)
 	}
 	_, err = io.Copy(part, file)
 	if err != nil {
-		return nil, err
+		return nil, errCannotCopyFileContent(err)
 	}
 
 	writer.WriteField("model", body.Model)
@@ -52,22 +49,17 @@ func Transcription(api OpenAIClient, httpClient HTTPClient, body *Transcriptions
 	}
 	res, err := httpClient.Post(api.BaseURL()+"/audio/transcriptions", &requestOptions)
 	if err != nil {
-		return nil, err
+		return nil, errCannotSendRequest(err)
 	}
 	defer res.Body.Close()
 
 	result := new(TranscriptionResponse)
 
-	if err := json.NewDecoder(res.Body).Decode(result); err != nil {
-		return nil, err
+	if err := goxios.DecodeJSON(res.Body, result); err != nil {
+		return nil, errCannotDecodeJSON(err)
 	}
 	if res.StatusCode != 200 {
-		b, err := io.ReadAll(res.Body)
-		if err != nil {
-			return nil, closeBody(res.Body, err)
-		}
-		errMessage := fmt.Sprintf("%s %s", res.Status, string(b))
-		return nil, closeBody(res.Body, errors.New(errMessage))
+		return nil,  openaiHttpError(res)
 	}
 	return result, nil
 }

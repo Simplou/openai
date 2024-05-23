@@ -1,7 +1,6 @@
 package openai
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"io"
@@ -32,7 +31,7 @@ type ImagesGenerationsRequestBody struct {
 	Prompt string `json:"prompt"`
 	N      int    `json:"n"`
 	Size   string `json:"size"`
-	Style  string `json:"style,omitempty"`//This param is only supported for dall-e-3.
+	Style  string `json:"style,omitempty"` //This param is only supported for dall-e-3.
 }
 
 type ImagesGenerationsResponse struct {
@@ -67,25 +66,25 @@ func (igr *ImagesGenerationsResponse) Download(httpClient HTTPClient, filePaths 
 	return nil
 }
 
-func ImagesGenerations(api OpenAIClient, httpClient HTTPClient, body *ImagesGenerationsRequestBody) (*ImagesGenerationsResponse, error) {
+func ImagesGenerations(api OpenAIClient, httpClient HTTPClient, body *ImagesGenerationsRequestBody) (*ImagesGenerationsResponse, *OpenAIErr) {
 	api.AddHeader(contentTypeJSON)
 	b, err := json.Marshal(body)
 	if err != nil {
-		return nil, err
+		return nil, errCannotMarshalJSON(err)
 	}
 	res, err := httpClient.Post(api.BaseURL()+"/images/generations", &goxios.RequestOpts{
-		Body:    bytes.NewBuffer(b),
+		Body:    ioReader(b),
 		Headers: Headers(),
 	})
 	if err != nil {
-		return nil, err
+		return nil, errCannotSendRequest(err)
 	}
 	if res.StatusCode >= http.StatusBadRequest {
-		return nil, errors.New(res.Status)
+		return nil, openaiHttpError(res)
 	}
 	images := new(ImagesGenerationsResponse)
 	if err := goxios.DecodeJSON(res.Body, images); err != nil {
-		return nil, err
+		return nil, errCannotDecodeJSON(err)
 	}
 	return images, nil
 }
