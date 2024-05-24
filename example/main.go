@@ -24,6 +24,10 @@ func main() {
 		`,
 		"oi, o que é o actor paradigm?",
 	)
+	badSentence := "I want to kill them."
+	query := "Hi, could you please explain what the actor paradigm is?"
+	chatModerator(badSentence)
+	chatModerator(query)
 	//functionCall()
 	//tts()
 	//whisper()
