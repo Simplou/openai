@@ -2,7 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
+	"strings"
 
 	"github.com/Simplou/openai"
 )
@@ -73,7 +75,7 @@ func chatByEmbedding(largeText string, query string) {
 			Model: "text-embedding-ada-002",
 			Input: chunks,
 		})
-		if err != nil{
+		if err != nil {
 			return &openai.EmbeddingResponse[[]float64]{}, nil
 		}
 		return emb, nil
@@ -103,8 +105,48 @@ func chatByEmbedding(largeText string, query string) {
 		relevantChunks = append(relevantChunks, chunks[i])
 	}
 	summary, err := openai.ChunksSummary(client, httpClient, relevantChunks, query)
-	if err != nil{
+	if err != nil {
 		log.Println(err)
 	}
 	log.Println(summary)
+}
+
+func chatModerator(customerMessage string) {
+	moderation, err := openai.Moderator(client, httpClient, &openai.ModerationRequest[string]{
+		Input: customerMessage,
+	})
+	if err != nil {
+		log.Println(err)
+	}
+	categories := make([]string, 0)
+	for _, v := range moderation.Results {
+		if v.Flagged {
+			for category, value := range v.Categories {
+				if value {
+					categories = append(categories, category)
+				}
+			}
+		}
+	}
+	if len(categories) == 0 {
+		res, err := openai.ChatCompletion[openai.DefaultMessages](
+			client,
+			httpClient,
+			&openai.CompletionRequest[openai.DefaultMessages]{
+				Model: "gpt-3.5-turbo",
+				Messages: openai.DefaultMessages{
+					{Role: "user", Content: customerMessage},
+				},
+			},
+		)
+		if err != nil {
+			log.Println(err)
+		}
+		log.Println(res.Choices[0].Message.Content)
+	} else {
+		s := strings.Join(categories, ", ")
+		moderatorMessage := fmt.Sprintf("Your statement contains several disrespectful things: (%s)", s)
+		log.Println(moderatorMessage)
+	}
+
 }
