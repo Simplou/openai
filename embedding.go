@@ -77,8 +77,8 @@ type ChunkTextOpts struct {
 
 // ChunkText splits the input text into chunks of specified size.
 func ChunkText(opts ChunkTextOpts) []string {
-	var chunkSize int
-	if opts.ChunkSize <= 0 {
+	chunkSize := opts.ChunkSize
+	if chunkSize <= 0 {
 		chunkSize = 512
 	}
 
