@@ -6,6 +6,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/Simplou/goxios"
 	"github.com/Simplou/openai"
 )
 
@@ -25,7 +26,8 @@ func chat() {
 }
 
 func functionCall() {
-	functionRegistry := map[string]func(string){}
+	type function func(string)
+	functionRegistry := goxios.GenericJSON[function]{}
 	sendEmailFnName := "sendEmail"
 	functionRegistry[sendEmailFnName] = func(email string) {
 		println("email ", email)
@@ -61,7 +63,7 @@ func functionCall() {
 	}
 	toolCalls := res.Choices[0].Message.ToolCalls
 	if len(toolCalls) > 0 {
-		var argumentsMap map[string]string
+		var argumentsMap goxios.GenericJSON[string]
 		if err := json.Unmarshal([]byte(toolCalls[0].Function.Args), &argumentsMap); err != nil {
 			panic(err)
 		}

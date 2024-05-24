@@ -61,7 +61,7 @@ type Function struct {
 	Parameters  FunctionParameters `json:"parameters"`
 }
 
-type FunctionProperties map[string]FunctionPropertie
+type FunctionProperties goxios.GenericJSON[FunctionPropertie]
 
 // FunctionParameters represents the parameters of a function
 type FunctionParameters struct {
