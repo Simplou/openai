@@ -59,7 +59,7 @@ func Transcription(api OpenAIClient, httpClient HTTPClient, body *Transcriptions
 		return nil, errCannotDecodeJSON(err)
 	}
 	if res.StatusCode != 200 {
-		return nil,  openaiHttpError(res)
+		return nil, openaiHttpError(res)
 	}
 	return result, nil
 }
