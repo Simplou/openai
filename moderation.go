@@ -7,7 +7,7 @@ import (
 )
 
 type ModerationRequest[Input string | []string] struct {
-	Input string `json:"input"`
+	Input Input  `json:"input"`
 	Model string `json:"model,omitempty"`
 }
 
