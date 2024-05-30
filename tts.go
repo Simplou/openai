@@ -26,22 +26,24 @@ var SpeechVoices = &openaiSpeechVoices{
 	Shimmer: shimmer,
 }
 
-// openaiSpeechVoices holds the available voices for OpenAI speech synthesis.
-type openaiSpeechVoices struct {
-	Alloy   string
-	Echo    string
-	Fable   string
-	Onyx    string
-	Nova    string
-	Shimmer string
-}
+type (
+	// openaiSpeechVoices holds the available voices for OpenAI speech synthesis.
+	openaiSpeechVoices struct {
+		Alloy   string
+		Echo    string
+		Fable   string
+		Onyx    string
+		Nova    string
+		Shimmer string
+	}
 
-// SpeechRequestBody represents the request body for the speech API.
-type SpeechRequestBody struct {
-	Model string `json:"model"` // The model for speech synthesis.
-	Input string `json:"input"` // The input text for synthesis.
-	Voice string `json:"voice"` // The voice to be used for synthesis.
-}
+	// SpeechRequestBody represents the request body for the speech API.
+	SpeechRequestBody struct {
+		Model string `json:"model"` // The model for speech synthesis.
+		Input string `json:"input"` // The input text for synthesis.
+		Voice string `json:"voice"` // The voice to be used for synthesis.
+	}
+)
 
 func TextToSpeech(api OpenAIClient, httpClient HTTPClient, body *SpeechRequestBody) (io.ReadCloser, *OpenAIErr) {
 	api.AddHeader(contentTypeJSON)
