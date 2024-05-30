@@ -27,20 +27,22 @@ type EmbeddingRequest[Input string | []string] struct {
 	User string `json:"user,omitempty"`
 }
 
-type Base64 string
+type (
+	Base64 string
+	
+	Embedding[Encoding []float64 | Base64] struct {
+		Object    string   `json:"object"`
+		Embedding Encoding `json:"embedding"`
+		Index     int      `json:"index"`
+	}
 
-type EmbeddingResponse[Encoding []float64 | Base64] struct {
-	Object string                `json:"object"`
-	Data   []Embedding[Encoding] `json:"data"`
-	Model  string                `json:"model"`
-	Usage  Usage                 `json:"usage"`
-}
-
-type Embedding[Encoding []float64 | Base64] struct {
-	Object    string   `json:"object"`
-	Embedding Encoding `json:"embedding"`
-	Index     int      `json:"index"`
-}
+	EmbeddingResponse[Encoding []float64 | Base64] struct {
+		Object string                `json:"object"`
+		Data   []Embedding[Encoding] `json:"data"`
+		Model  string                `json:"model"`
+		Usage  Usage                 `json:"usage"`
+	}
+)
 
 // CreateEmbedding sends a request to create embeddings for the given input.
 func CreateEmbedding[Input string | []string, Encoding []float64 | Base64](api OpenAIClient, httpClient HTTPClient, body *EmbeddingRequest[Input]) (*EmbeddingResponse[Encoding], *OpenAIErr) {
