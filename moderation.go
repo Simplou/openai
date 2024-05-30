@@ -6,20 +6,22 @@ import (
 	"github.com/Simplou/goxios"
 )
 
-type ModerationRequest[Input string | []string] struct {
-	Input Input  `json:"input"`
-	Model string `json:"model,omitempty"`
-}
+type (
+	ModerationRequest[Input string | []string] struct {
+		Input Input  `json:"input"`
+		Model string `json:"model,omitempty"`
+	}
 
-type ModerationResponse struct {
-	Id      string `json:"id"`
-	Model   string `json:"model"`
-	Results []struct {
-		Flagged    bool                     `json:"flagged"`
-		Categories goxios.GenericJSON[bool] `json:"categories"`
-	} `json:"results"`
-	CategoryScores goxios.GenericJSON[float64] `json:"category_scores"`
-}
+	ModerationResponse struct {
+		Id      string `json:"id"`
+		Model   string `json:"model"`
+		Results []struct {
+			Flagged    bool                     `json:"flagged"`
+			Categories goxios.GenericJSON[bool] `json:"categories"`
+		} `json:"results"`
+		CategoryScores goxios.GenericJSON[float64] `json:"category_scores"`
+	}
+)
 
 func Moderator[Input string | []string](api OpenAIClient, httpClient HTTPClient, body *ModerationRequest[Input]) (*ModerationResponse, *OpenAIErr) {
 	api.AddHeader(contentTypeJSON)
