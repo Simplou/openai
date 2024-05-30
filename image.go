@@ -26,20 +26,22 @@ func VividImageStyle() imageStyle {
 	return imageStyle("vivid")
 }
 
-type ImagesGenerationsRequestBody struct {
-	Model  string `json:"model"`
-	Prompt string `json:"prompt"`
-	N      int    `json:"n"`
-	Size   string `json:"size"`
-	Style  string `json:"style,omitempty"` //This param is only supported for dall-e-3.
-}
+type (
+	ImagesGenerationsRequestBody struct {
+		Model  string `json:"model"`
+		Prompt string `json:"prompt"`
+		N      int    `json:"n"`
+		Size   string `json:"size"`
+		Style  string `json:"style,omitempty"` //This param is only supported for dall-e-3.
+	}
 
-type ImagesGenerationsResponse struct {
-	Created int64 `json:"created"`
-	Data    []struct {
-		Url string `json:"url"`
-	} `json:"data"`
-}
+	ImagesGenerationsResponse struct {
+		Created int64 `json:"created"`
+		Data    []struct {
+			Url string `json:"url"`
+		} `json:"data"`
+	}
+)
 
 func (igr *ImagesGenerationsResponse) Download(httpClient HTTPClient, filePaths []string) error {
 	if len(filePaths) != len(igr.Data) {

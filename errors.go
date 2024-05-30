@@ -67,7 +67,7 @@ func closeBody(body io.ReadCloser, err error) *OpenAIErr {
 	if err, ok := err.(*OpenAIErr); ok {
 		return err
 	}
-	if err != nil{
+	if err != nil {
 		return internalError(err, "internal_error")
 	}
 	return nil

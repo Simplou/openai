@@ -9,15 +9,17 @@ import (
 	"github.com/Simplou/goxios"
 )
 
-type TranscriptionsRequestBody struct {
-	Model, Filename, AudioFilePath string
-}
-
 const DefaultTranscriptionModel = "whisper-1"
 
-type TranscriptionResponse struct {
-	Text string `json:"text"`
-}
+type (
+	TranscriptionsRequestBody struct {
+		Model, Filename, AudioFilePath string
+	}
+
+	TranscriptionResponse struct {
+		Text string `json:"text"`
+	}
+)
 
 func Transcription(api OpenAIClient, httpClient HTTPClient, body *TranscriptionsRequestBody) (*TranscriptionResponse, *OpenAIErr) {
 	file, err := os.Open(body.AudioFilePath)
@@ -59,7 +61,7 @@ func Transcription(api OpenAIClient, httpClient HTTPClient, body *Transcriptions
 		return nil, errCannotDecodeJSON(err)
 	}
 	if res.StatusCode != 200 {
-		return nil,  openaiHttpError(res)
+		return nil, openaiHttpError(res)
 	}
 	return result, nil
 }
