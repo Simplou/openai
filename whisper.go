@@ -46,7 +46,7 @@ func Transcription(api OpenAIClient, httpClient HTTPClient, body *Transcriptions
 
 	api.AddHeader(goxios.Header{Key: "Content-Type", Value: writer.FormDataContentType()})
 	requestOptions := goxios.RequestOpts{
-		Headers: Headers(),
+		Headers: api.Headers(),
 		Body:    b,
 	}
 	res, err := httpClient.Post(api.BaseURL()+"/audio/transcriptions", &requestOptions)

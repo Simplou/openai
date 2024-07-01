@@ -25,6 +25,8 @@ func (c MockClient) BaseURL() string {
 
 func (c MockClient) AddHeader(h goxios.Header) {}
 
+func (c MockClient) Headers() []goxios.Header { return []goxios.Header{} }
+
 type testHTTPClient struct {
 	req *http.Request
 }

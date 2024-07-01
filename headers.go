@@ -5,18 +5,17 @@ import (
 )
 
 var (
-	headers         = []goxios.Header{}
 	contentTypeJSON = goxios.Header{Key: "Content-Type", Value: "application/json"}
 )
 
 func (c *Client) setAuthorizationHeader() {
-	headers = append(headers, goxios.Header{Key: "Authorization", Value: "Bearer " + c.apiKey})
+	c.headers = append(c.headers, goxios.Header{Key: "Authorization", Value: "Bearer " + c.apiKey})
 }
 
 func (c *Client) AddHeader(h goxios.Header) {
-	headers = append(headers, h)
+	c.headers = append(c.headers, h)
 }
 
-func Headers() []goxios.Header {
-	return headers
+func (c *Client) Headers() []goxios.Header {
+	return c.headers
 }

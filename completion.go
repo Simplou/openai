@@ -108,7 +108,7 @@ func ChatCompletion[Messages any](api OpenAIClient, httpClient HTTPClient, body 
 		return nil, errCannotMarshalJSON(err)
 	}
 	options := &goxios.RequestOpts{
-		Headers: Headers(),
+		Headers: api.Headers(),
 		Body:    ioReader(b),
 	}
 	res, err := httpClient.Post(api.BaseURL()+"/chat/completions", options)

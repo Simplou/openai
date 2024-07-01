@@ -8,8 +8,9 @@ import (
 )
 
 type Client struct {
-	ctx    context.Context
-	apiKey string
+	ctx     context.Context
+	apiKey  string
+	headers []goxios.Header
 }
 
 type OpenAIClient interface {
@@ -17,6 +18,7 @@ type OpenAIClient interface {
 	ApiKey() string
 	BaseURL() string
 	AddHeader(goxios.Header)
+	Headers() []goxios.Header
 }
 
 type HTTPClient interface {
@@ -37,7 +39,7 @@ func (c *Client) ApiKey() string {
 }
 
 func New(ctx context.Context, apiKey string) *Client {
-	openaiClient := &Client{ctx, apiKey}
+	openaiClient := &Client{ctx, apiKey, []goxios.Header{}}
 	openaiClient.setAuthorizationHeader()
 	return openaiClient
 }

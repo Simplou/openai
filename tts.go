@@ -52,7 +52,7 @@ func TextToSpeech(api OpenAIClient, httpClient HTTPClient, body *SpeechRequestBo
 		return nil, NewOpenAIErr(err, 500, "marshal_json_error")
 	}
 	options := goxios.RequestOpts{
-		Headers: Headers(),
+		Headers: api.Headers(),
 		Body:    ioReader(b),
 	}
 	res, err := httpClient.Post(api.BaseURL()+"/audio/speech", &options)
