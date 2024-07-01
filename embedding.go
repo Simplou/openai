@@ -52,7 +52,7 @@ func CreateEmbedding[Input string | []string, Encoding []float64 | Base64](api O
 		return nil, errCannotMarshalJSON(err)
 	}
 	options := goxios.RequestOpts{
-		Headers: Headers(),
+		Headers: api.Headers(),
 		Body:    ioReader(b),
 	}
 	res, err := httpClient.Post(api.BaseURL()+"/embeddings", &options)

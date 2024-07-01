@@ -76,7 +76,7 @@ func ImagesGenerations(api OpenAIClient, httpClient HTTPClient, body *ImagesGene
 	}
 	res, err := httpClient.Post(api.BaseURL()+"/images/generations", &goxios.RequestOpts{
 		Body:    ioReader(b),
-		Headers: Headers(),
+		Headers: api.Headers(),
 	})
 	if err != nil {
 		return nil, errCannotSendRequest(err)

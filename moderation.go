@@ -31,7 +31,7 @@ func Moderator[Input string | []string](api OpenAIClient, httpClient HTTPClient,
 	}
 	options := goxios.RequestOpts{
 		Body:    ioReader(b),
-		Headers: Headers(),
+		Headers: api.Headers(),
 	}
 	res, err := httpClient.Post(api.BaseURL()+"/moderations", &options)
 	if err != nil {
