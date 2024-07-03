@@ -1,4 +1,2 @@
-github.com/Simplou/goxios v0.0.0-20240429182252-1d8cfb866de1 h1:HoSNW9B/kcP3H1Eqz9i+aesSEPUjM9gIDcPxDIPXf4Y=
-github.com/Simplou/goxios v0.0.0-20240429182252-1d8cfb866de1/go.mod h1:Zi5vYOgi0Rm3eO67OO6rkg0MlrFYv6Z2P5cO3N5sJa0=
-github.com/Simplou/goxios v0.0.0-20240508133143-fa24a4ca4582 h1:6hGNdNK39xbDkNzdJ4qp6XG30RT4n1P8ZJGiCihmxIk=
-github.com/Simplou/goxios v0.0.0-20240508133143-fa24a4ca4582/go.mod h1:Zi5vYOgi0Rm3eO67OO6rkg0MlrFYv6Z2P5cO3N5sJa0=
+github.com/Simplou/goxios v0.0.0-20240703130609-8441247b1b3b h1:hRB1+bPVVIVSzuaLWt/SNkUXuP0mlSWz9zOgxLTJsP4=
+github.com/Simplou/goxios v0.0.0-20240703130609-8441247b1b3b/go.mod h1:32itbGeDJAigcHyXpHRhGmxHfx7kaWgJ7J8YP07uv/U=
